@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xmlns:task="http://www.springframework.org/schema/task"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/context
+       http://www.springframework.org/schema/context/spring-context.xsd
+	   http://www.springframework.org/schema/tx
+       http://www.springframework.org/schema/tx/spring-tx.xsd
+       http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task.xsd">
+
+    <bean id="firstHandler" class="server.handler.FirstServerHandler"/>
+
+    <bean id="loggingFilter" class="org.apache.mina.filter.logging.LoggingFilter" />
+    <!--<bean id="codecFilter" class="org.apache.mina.filter.codec.ProtocolCodecFilter">-->
+        <!--<constructor-arg>-->
+            <!--<bean class="org.apache.mina.filter.codec.textline.TextLineCodecFactory"/>-->
+        <!--</constructor-arg>-->
+    <!--</bean>-->
+    <bean id="codecFilter" class="org.apache.mina.filter.codec.ProtocolCodecFilter">
+        <constructor-arg>
+            <bean class="server.codeFactory.TestFactory"/>
+        </constructor-arg>
+    </bean>
+
+    <!--HeartBeatFilter-->
+    <bean id="keepAliveFilter" class="org.apache.mina.filter.keepalive.KeepAliveFilter">
+        <!--构造函数的第一个参数传入自己实现的工厂-->
+        <constructor-arg>
+            <bean class="server.MyKeepAliveMessageFactory"/>
+        </constructor-arg>
+        <!--第二个参数需要的是IdleStatus对象，value值设置为读写空闲-->
+        <constructor-arg type="org.apache.mina.core.session.IdleStatus" value="BOTH_IDLE"/>
+        <!--心跳频率，不设置则默认60s-->
+        <property name="requestInterval" value="5"/>
+        <!--心跳超时时间，不设置则默认30s-->
+        <property name="requestTimeout" value="10"/>
+        <!--不设置默认false-->
+        <property name="forwardEvent" value="true"/>
+    </bean>
+
+    <!-- The filter chain. -->
+    <bean id="filterChainBuilder" class="org.apache.mina.core.filterchain.DefaultIoFilterChainBuilder">
+        <property name="filters">
+            <map>
+                <entry key="loggingFilter" value-ref="loggingFilter"/>
+                <entry key="codecFilter" value-ref="codecFilter"/>
+                <!--<entry key="keepAliveFilter" value-ref="keepAliveFilter"/>-->
+            </map>
+        </property>
+    </bean>
+    <!--属性编辑器(字符串表示对象)-->
+    <bean class="org.springframework.beans.factory.config.CustomEditorConfigurer">
+        <property name="customEditors">
+            <map>
+                <entry key="java.net.SocketAddress" value="org.apache.mina.integration.beans.InetSocketAddressEditor"/>
+            </map>
+        </property>
+    </bean>
+
+    <!-- The IoAcceptor which binds to port 9876 -->
+    <bean id="ioAcceptor" class="org.apache.mina.transport.socket.nio.NioSocketAcceptor" init-method="bind" destroy-method="unbind">
+        <property name="defaultLocalAddress" value=":9876" />
+        <property name="handler" ref="firstHandler" />
+        <property name="filterChainBuilder" ref="filterChainBuilder" />
+    </bean>
+    <!--连接数据库-->
+    <bean id="dataSource" class="org.apache.commons.dbcp2.BasicDataSource" destroy-method="close">
+        <property name="driverClassName" value="com.mysql.jdbc.Driver"/>
+        <property name="url" value="jdbc:mysql://localhost:3306/SMM?useSSL=true&amp;useUnicode=true&amp;characterEncoding=utf-8&amp;allowMultiQueries=true"/>
+        <property name="username" value="root"/>
+        <property name="password" value="HUWENDI9"/>
+        <!-- 连接初始值，连接池启动时创建的连接数量的初始值  默认值是0 -->
+        <property name="initialSize" value="3" />
+        <!-- 最小空闲值.当空闲的连接数少于阀值时，连接池就会预申请去一些连接，以免洪峰来时来不及申请  默认值是0 -->
+        <property name="minIdle" value="3" />
+        <!-- 最大空闲值.当经过一个高峰时间后，连接池可以慢慢将已经用不到的连接慢慢释放一部分，一直减少到maxIdle为止 ，0时无限制  默认值是8 -->
+        <property name="maxIdle" value="5" />
+        <!-- 连接池的最大值，同一时间可以从池分配的最多连接数量，0时无限制   默认值是8 -->
+        <property name="maxTotal" value="15" />
+    </bean>
+    <!--配置SqlSession对象-->
+    <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+        <property name="dataSource" ref="dataSource"/>
+        <!--配置Mybatis全局配置文件-->
+        <property name="configLocation" value="mybatis-config.xml"/>
+        <!--扫描实体类-->
+        <property name="typeAliasesPackage" value="entities"/>
+        <!--&lt;!&ndash;扫描sql配置文件:mapper需要的xml文件&ndash;&gt;-->
+        <property name="mapperLocations" value="classpath:mapper/*.xml"/>
+    </bean>
+    <!--配置扫描Dao接口包,动态实现Dao接口,注入Spring容器中-->
+    <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+        <!--注入sqlSessionFactory-->
+        <property name="sqlSessionFactoryBeanName" value="sqlSessionFactory"/>
+        <!--需要扫描Dao接口包-->
+        <property name="basePackage" value="dao"/>
+    </bean>
+    <!--扫描service包下所有的注解类型-->
+    <context:component-scan base-package="server"/>
+    <!--配置事务管理器-->
+    <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+        <!--注入数据库连接池-->
+        <property name="dataSource" ref="dataSource"/>
+    </bean>
+    <!--配置基于注解的声明式事务-->
+    <tx:annotation-driven transaction-manager = "transactionManager"/>
+
+
+    <!--定时器开关-->
+    <!--<task:annotation-driven/>-->
+    <!--<bean id="timerSendData" class="client.thread.TimerSendData">-->
+        <!--<property name="session" ref=""/>-->
+    <!--</bean>-->
+
+</beans>

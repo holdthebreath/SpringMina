@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="dao.SynchronizePlcDataDayMapper">
+    <insert id="insertPlcDataDay" parameterType="java.util.List">
+        insert ignore into SMM.plc_data_day(id,station_id,quota_key,quota_value,quota_type,create_date,update_date,calculate_date,device_id,device_type,isSend)
+        values
+        <foreach collection="list" item="plcDataDay" index="index" separator=",">
+            (#{plcDataDay.id},#{plcDataDay.station_id},#{plcDataDay.quota_key},#{plcDataDay.quota_value},#{plcDataDay.quota_type},
+            #{plcDataDay.create_date},#{plcDataDay.update_date},#{plcDataDay.calculate_date},#{plcDataDay.device_id},
+            #{plcDataDay.device_type},#{plcDataDay.isSend})
+        </foreach>
+    </insert>
+</mapper>

@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="client.resources.dao.PlcDataAlarmMapper">
+    <select id="getAllPlcDataAlarms" resultType="entities.PlcDataAlarm">
+        select * from unitedsws.plc_data_alarm;
+    </select>
+    <select id="getFirstPlcDataAlarms" parameterType="java.util.List">
+        select * from unitedsws.plc_data_alarm limit 1;
+    </select>
+    <select id="getSendPlcDataAlarm" resultType="entities.PlcDataAlarm">
+        select * from unitedsws.plc_data_alarm where unitedsws.plc_data_alarm.create_date > #{startTime} and unitedsws.plc_data_alarm.create_date &lt;= #{endTime}
+        and unitedsws.plc_data_alarm.isSend = 0;
+    </select>
+    <!--<update id="batchUpdatePlcDataAlarm" parameterType="java.util.List">-->
+        <!--update unitedsws.plc_data_alarm-->
+        <!--<foreach collection="list" separator="," item="plcDataAlarm">-->
+            <!--set id = #{plcDataAlarm.id}, station_id = #{plcDataAlarm.station_Id}, quota_key = #{plcDataAlarm.quota_Key}, quota_value = #{plcDataAlarm.quota_Value}, quota_type = #{plcDataAlarm.quota_Type},-->
+            <!--create_date = #{plcDataAlarm.create_Date}, create_by = #{plcDataAlarm.create_By}, update_date = #{plcDataAlarm.update_Date}, release_date = #{plcDataAlarm.release_Date}, deal_date = #{plcDataAlarm.deal_Date},-->
+            <!--deal_user = #{plcDataAlarm.deal_User}, deal_mark = #{plcDataAlarm.deal_Mark}, deal_flag = #{plcDataAlarm.deal_Flag}, alarm_msg = #{plcDataAlarm.alarm_Msg}, alarm_type = #{plcDataAlarm.alarm_Type},-->
+            <!--alarm_flag = #{plcDataAlarm.alarm_Flag}, alarm_time = #{plcDataAlarm.alarm_Time}, device_id = #{plcDataAlarm.device_Id}, device_type = #{plcDataAlarm.device_Type}, lower_limit = #{plcDataAlarm.lower_Limit},-->
+            <!--upper_limit = #{plcDataAlarm.upper_Limit}, subflow_id = #{plcDataAlarm.subflow_Id}, unit_id = #{plcDataAlarm.unit_Id},release_flag = #{plcDataAlarm.release_Flag}, origin_flag = #{plcDataAlarm.origin_Flag},-->
+            <!--plan_id = #{plcDataAlarm.plan_Id}, isSend = #{plcDataAlarm.isSend}-->
+            <!--where id = #{plcDataAlarm.id}-->
+        <!--</foreach>-->
+    <!--</update>-->
+    <update id="batchUpdatePlcDataAlarmIsSend" parameterType="java.util.List">
+        update unitedsws.plc_data_alarm set isSend = true where id in 
+        <foreach collection="list" item="item" index="index" open="(" close=")" separator=",">
+            ${item.id}
+        </foreach>
+    </update>
+    
+    
+</mapper>

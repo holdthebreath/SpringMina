@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="client.resources.dao.MessageMapper">
+    <select id="getAllMessages" resultType="entities.Message">
+        SELECT * FROM message
+    </select>
+    <select id="getMessageById" parameterType="int" resultType="entities.Message">
+        SELECT * FROM message WHERE id = #{messageId}
+    </select>
+    <insert id="insertMessage" parameterType="entities.Message">
+        INSERT INTO message VALUES (#{id}, #{address}, #{message}, #{date}, #{isSend})
+    </insert>
+    <delete id="deleteMessageById" parameterType="int">
+        DELETE FROM message WHERE id = #{messageId}
+    </delete>
+    <select id="getMessages" resultType="entities.Message">
+        SELECT * FROM message WHERE message.date &gt; #{startTime} AND message.date &lt;= #{endTime} AND isSend = 0;
+    </select>
+    <update id="updateMessage" parameterType="entities.Message">
+        UPDATE message SET id = #{id}, address = #{address}, message = #{message}, date = #{date}, isSend = #{isSend} WHERE id = #{id};
+    </update>
+</mapper>

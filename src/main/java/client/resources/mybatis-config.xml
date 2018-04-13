@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE configuration
+        PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+    <properties resource="client/resources/jdbc.properties"/>
+    <!--<typeAliases>-->
+        <!--<typeAlias alias="Message" type="entities.Message"/>-->
+    <!--</typeAliases>-->
+    <environments default="unitedsws">
+        <environment id="unitedsws">
+            <transactionManager type="JDBC"/>
+            <dataSource type="POOLED">
+                <property name="driver" value="${driver}"/>
+                <property name="url" value="${url}"/>
+                <property name="username" value="${username}"/>
+                <property name="password" value="${password}"/>
+            </dataSource>
+        </environment>
+    </environments>
+    <mappers>
+        <!--<mapper resource="client/resources/mapper/MessageMapper.xml"/>-->
+        <mapper resource="client/resources/mapper/PlcDataAlarmMapper.xml"/>
+        <mapper resource="client/resources/mapper/PlcDataDayMapper.xml"/>
+    </mappers>
+</configuration>

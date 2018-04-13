@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="dao.SynchronizePlcDataAlarmMapper">
+    <insert id="insertPlcDataAlarm" parameterType="java.util.List">
+        insert ignore into plc_data_alarm(id,station_id,quota_key,quota_type,quota_value,create_date,create_by,update_date,release_date,deal_date,deal_user,deal_mark,
+        deal_flag,alarm_msg,alarm_type,alarm_flag,alarm_time,device_id,device_type,lower_limit,upper_limit,subflow_id,unit_id,release_flag,origin_flag,plan_id,isSend)
+        values
+        <foreach collection="list" item="plcDataAlarm" index="index" separator=",">
+            (#{plcDataAlarm.id},#{plcDataAlarm.station_id},#{plcDataAlarm.quota_key},#{plcDataAlarm.quota_type},#{plcDataAlarm.quota_value},#{plcDataAlarm.create_date},
+            #{plcDataAlarm.create_by},#{plcDataAlarm.update_date},#{plcDataAlarm.release_date},#{plcDataAlarm.deal_date},#{plcDataAlarm.deal_user},#{plcDataAlarm.deal_mark},
+            #{plcDataAlarm.deal_flag},#{plcDataAlarm.alarm_msg},#{plcDataAlarm.alarm_type},#{plcDataAlarm.alarm_flag},#{plcDataAlarm.alarm_time},#{plcDataAlarm.device_id},#{plcDataAlarm.device_type},
+            #{plcDataAlarm.lower_limit},#{plcDataAlarm.upper_limit},#{plcDataAlarm.subflow_id},#{plcDataAlarm.unit_id},#{plcDataAlarm.release_flag},#{plcDataAlarm.origin_flag},
+            #{plcDataAlarm.plan_id},#{plcDataAlarm.isSend})
+        </foreach>
+    </insert>
+</mapper>
