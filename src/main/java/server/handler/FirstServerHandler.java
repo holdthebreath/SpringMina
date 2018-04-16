@@ -31,8 +31,8 @@ public class FirstServerHandler extends IoHandlerAdapter{
     @Override
     public void sessionCreated(IoSession session) throws Exception{
         SocketSessionConfig sessionConfig = (SocketSessionConfig)session.getConfig();
-        sessionConfig.setReadBufferSize(1024 * 1024 * 1000);
-        sessionConfig.setReceiveBufferSize(10424 * 1024 * 1000);
+        sessionConfig.setReadBufferSize(1024 * 1024 * 10);
+        sessionConfig.setReceiveBufferSize(1024 * 1024 * 10);
         LOGGER.info("客户端与服务器端创建连接!");
     }
     @Override

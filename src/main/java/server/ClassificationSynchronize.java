@@ -15,8 +15,8 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 @Component
 public class ClassificationSynchronize {
-    final static int Plc_Data_Alarm_Attributes = 27;
-    final static int Plc_Data_Day_Attributes = 11;
+    private final static int Plc_Data_Alarm_Attributes = 27;
+    private final static int Plc_Data_Day_Attributes = 11;
 
     @Autowired
     SynchronizePlcDataAlarmMapper synchronizePlcDataAlarmMapper;
@@ -177,6 +177,8 @@ public class ClassificationSynchronize {
                         else
                             plcDataAlarm.setIsSend(true);
                         break;
+                    default:
+                       throw new Exception("PlcDataAlarm: 属性分类错误!");
                 }
                 receivePlcDataAlarms.add(plcDataAlarm);
             }
@@ -251,6 +253,8 @@ public class ClassificationSynchronize {
                         else
                             plcDataDay.setIsSend(true);
                         break;
+                    default:
+                        throw new Exception("PlcDataDay: 属性分类错误!");
                 }
                 receivePlcDataDays.add(plcDataDay);
             }
