@@ -66,10 +66,10 @@ public class SendPlcDataDayData extends TimerTask{
                 StringBuilder sendData = new StringBuilder();
 //              thisSendDataNumbers: 这次循环数据的总数 hasSendDataNumber: 已经发送数据的总数
                 int thisSendDataNumbers, hasSendDataNumbers;
-                if (hasSendNumber < needSendNumber - 1)
+                if((allSendData.size() - DATA_PACKAGE * hasSendNumber) >= DATA_PACKAGE)
                     thisSendDataNumbers = DATA_PACKAGE;
                 else
-                    thisSendDataNumbers = (allSendData.size()) % DATA_PACKAGE;
+                    thisSendDataNumbers = allSendData.size() - DATA_PACKAGE * hasSendNumber;
                 hasSendDataNumbers = DATA_PACKAGE * hasSendNumber;
 //              拼接每条数据为一个字符串
                 for (int i = 0; i < thisSendDataNumbers; i++) {
