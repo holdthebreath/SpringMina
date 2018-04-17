@@ -23,11 +23,11 @@ public class ClassificationSynchronize {
     @Autowired
     SynchronizePlcDataDayMapper synchronizePlcDataDayMapper;
 
-    public int SynchronizePlcDataAlarm(String[] receiveDatas) throws Exception{
+    public int SynchronizePlcDataAlarm(String[] receiveData) throws Exception{
         PlcDataAlarm plcDataAlarm;
         ArrayList<PlcDataAlarm> receivePlcDataAlarms = new ArrayList<>();
-        for (int j = 0; j < receiveDatas.length - 1; j++) {
-            String[] stringPlcDataAlarm = receiveDatas[j].split(",");
+        for (int j = 0; j < receiveData.length - 1; j++) {
+            String[] stringPlcDataAlarm = receiveData[j].split(",");
             plcDataAlarm = new PlcDataAlarm();
             SimpleDateFormat df1 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             for(int i = 0; i < Plc_Data_Alarm_Attributes; i++){
@@ -186,11 +186,11 @@ public class ClassificationSynchronize {
         return synchronizePlcDataAlarmMapper.insertPlcDataAlarm(receivePlcDataAlarms);
     }
 
-    public int SynchronizePlcDataDay(String[] receiveDatas) throws Exception{
+    public int SynchronizePlcDataDay(String[] receiveData) throws Exception{
         PlcDataDay plcDataDay;
         ArrayList<PlcDataDay> receivePlcDataDays = new ArrayList<>();
-        for (int j = 0; j < receiveDatas.length - 1; j++) {
-            String[] stringPlcDataDay = receiveDatas[j].split(",");
+        for (int j = 0; j < receiveData.length - 1; j++) {
+            String[] stringPlcDataDay = receiveData[j].split(",");
             plcDataDay = new PlcDataDay();
             SimpleDateFormat df1 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             SimpleDateFormat df2 = new SimpleDateFormat("yyyy-MM-dd");
