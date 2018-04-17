@@ -235,6 +235,7 @@ public class ClassificationSynchronize {
                         java.util.Date d = df2.parse(stringPlcDataDay[i]);
                         Date calculate_date = new Date(d.getTime());
                         plcDataDay.setCalculate_date(calculate_date);
+                        break;
                     case 8:
                         if(!stringPlcDataDay[i].equals("null"))
                             plcDataDay.setDevice_id(stringPlcDataDay[i]);

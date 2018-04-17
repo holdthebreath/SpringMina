@@ -62,7 +62,7 @@ public class PlcDataAlarm {
     public String getQuota_value() {
         return quota_value;
     }
-    public void setQuota_value(String quotaValue) {
+    public void setQuota_value(String quota_value) {
         this.quota_value = quota_value;
     }
 
