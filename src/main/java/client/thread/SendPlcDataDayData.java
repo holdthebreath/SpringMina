@@ -125,9 +125,9 @@ public class SendPlcDataDayData extends TimerTask{
         if(allSendData.size() != 0) {
             int i = plcDataDayDAO.batchUpdatePlcDataDayIsSend(allSendData);
             if (i != 0)
-                System.out.println("Update Success!");
+                System.out.println("Batch Update plc_data_day IsSend Success!");
             else
-                System.out.println("ERROR");
+                System.out.println("Batch Update plc_data_day IsSend Error!");
         }
     }
 }
