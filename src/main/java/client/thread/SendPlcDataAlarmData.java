@@ -19,8 +19,9 @@ import java.util.TimerTask;
 public class SendPlcDataAlarmData extends TimerTask{
     private Timestamp startTime = null;
     //间隔时间,单位毫秒(秒 * 分 * 时 * 天 * N)
-    private static int TIME_INTERVAL= 1000 * 60 * 60 * 24 * 5;
+    private static int TIME_INTERVAL= 1000 * 60 * 60 * 24;
     private IoSession session;
+    private final static int DATA_PACKAGE = 5;
 //    private MessageMapper messageMapper;
 //    public IoSession getSession() {
 //        return session;
@@ -75,24 +76,32 @@ public class SendPlcDataAlarmData extends TimerTask{
             }
         }
         else {
-            Timestamp endTime = new Timestamp(startTime.getTime() + TIME_INTERVAL);
+            try {
+                Timestamp endTime = new Timestamp(startTime.getTime() + TIME_INTERVAL);
 //            messages = (ArrayList<Message>) messageDAO.getMessages(startTime, endTime);
-            allSendData = (ArrayList<PlcDataAlarm>) plcDataAlarmDAO.getSendPlcDataAlarm(startTime, endTime);
+                allSendData = (ArrayList<PlcDataAlarm>) plcDataAlarmDAO.getSendPlcDataAlarm(startTime, endTime);
 
 //            if (messages.size() == 0) {
-            if(allSendData.size() == 0){
-                String content = "PlcDataAlarm: Between " + startTime + " and " + endTime + " No data!";
-                MessageProtocol objectMessage = new MessageProtocol(1, content);
-                session.write(objectMessage);
-                startTime = endTime;
-            }
-            else
-                startTime = allSendData.get(allSendData.size() - 1).getCreate_date();
-//                startTime = messages.get(messages.size() - 1).getDate();
+                if (allSendData.size() == 0) {
+                    String content = "PlcDataAlarm: Between " + startTime + " and " + endTime + " No data!";
+                    MessageProtocol objectMessage = new MessageProtocol(1, content);
+                    session.write(objectMessage);
+                    startTime = endTime;
+                } else
+                    startTime = allSendData.get(allSendData.size() - 1).getCreate_date();
+            }catch (Exception e){
+                e.printStackTrace();
+
+            }//                startTime = messages.get(messages.size() - 1).getDate();
         }
 //        for (Message message: messages) {
-        String sendContent = null;
-        for (PlcDataAlarm plcDataAlarm: allSendData){
+        int needSendNumber, hasSendNumber = 0;
+        if(((allSendData.size()) % DATA_PACKAGE) != 0)
+            needSendNumber = (allSendData.size() / DATA_PACKAGE) + 1;
+        else
+            needSendNumber = (allSendData.size()) / DATA_PACKAGE;
+        try {
+            while (allSendData.size() != 0 && hasSendNumber < needSendNumber) {
 //            String content = " id: " + message.getId() + ",address: " + message.getAddress() + ",message: " + message.getMessage() + ",date: " + message.getDate()
 //                    + ",isSend: " + message.getIsSend();
 //            String content = " " + message.getId() + "," + message.getAddress() + "," + message.getMessage() + "," + message.getDate() + "," + message.getIsSend();
@@ -100,33 +109,103 @@ public class SendPlcDataAlarmData extends TimerTask{
 //            session.write(objectMessage);
 //            message.setIsSend(true);
 //            int i = messageDAO.updateMessageById(message);
-            String content = plcDataAlarm.getId() + "," + plcDataAlarm.getStation_id() + "," + plcDataAlarm.getQuota_key() + "," + plcDataAlarm.getQuota_value()
-                    + "," + plcDataAlarm.getQuota_type() + "," + plcDataAlarm.getCreate_date() + "," + plcDataAlarm.getCreate_by() + "," + plcDataAlarm.getUpdate_date()
-                    + "," + plcDataAlarm.getRelease_date() + "," + plcDataAlarm.getDeal_date() + "," + plcDataAlarm.getDeal_user() + "," + plcDataAlarm.getDeal_mark()
-                    + "," + plcDataAlarm.getDeal_flag() + "," + plcDataAlarm.getAlarm_msg() + "," + plcDataAlarm.getAlarm_type() + "," + plcDataAlarm.getAlarm_flag()
-                    + "," + plcDataAlarm.getAlarm_time() + "," + plcDataAlarm.getDevice_id() + "," + plcDataAlarm.getDevice_type() + "," + plcDataAlarm.getLower_limit()
-                    + "," + plcDataAlarm.getUpper_limit() + "," + plcDataAlarm.getSubflow_id() + "," + plcDataAlarm.getUnit_id() + "," + plcDataAlarm.getRelease_flag()
-                    + "," + plcDataAlarm.getOrigin_flag() + "," + plcDataAlarm.getPlan_id() + "," + plcDataAlarm.getIsSend();
-            plcDataAlarm.setIsSend(true);
-            content = content + ";";
-            if(sendContent == null)
-                sendContent = content;
-            else
-                sendContent += content;
+                StringBuilder sendData = new StringBuilder();
+                int thisSendDataNumbers, hasSendDataNumbers;
+                if((allSendData.size() - DATA_PACKAGE * hasSendNumber) >= DATA_PACKAGE)
+                    thisSendDataNumbers = DATA_PACKAGE;
+                else
+                    thisSendDataNumbers = allSendData.size() - DATA_PACKAGE * hasSendNumber;
+                hasSendDataNumbers = DATA_PACKAGE * hasSendNumber;
+                for (int i = 0; i < thisSendDataNumbers; i++) {
+                    StringBuilder content = new StringBuilder();
+                    content.append(allSendData.get(i + hasSendDataNumbers).getId());
+                    content.append(",");
+                    content.append(allSendData.get(i + hasSendDataNumbers).getStation_id());
+                    content.append(",");
+                    content.append(allSendData.get(i + hasSendDataNumbers).getQuota_key());
+                    content.append(",");
+                    content.append(allSendData.get(i + hasSendDataNumbers).getQuota_value());
+                    content.append(",");
+                    content.append(allSendData.get(i + hasSendDataNumbers).getQuota_type());
+                    content.append(",");
+                    content.append(allSendData.get(i + hasSendDataNumbers).getCreate_date());
+                    content.append(",");
+                    content.append(allSendData.get(i + hasSendDataNumbers).getCreate_by());
+                    content.append(",");
+                    content.append(allSendData.get(i + hasSendDataNumbers).getUpdate_date());
+                    content.append(",");
+                    content.append(allSendData.get(i + hasSendDataNumbers).getRelease_date());
+                    content.append(",");
+                    content.append(allSendData.get(i + hasSendDataNumbers).getDeal_date());
+                    content.append(",");
+                    content.append(allSendData.get(i + hasSendDataNumbers).getDeal_user());
+                    content.append(",");
+                    content.append(allSendData.get(i + hasSendDataNumbers).getDeal_mark());
+                    content.append(",");
+                    content.append(allSendData.get(i + hasSendDataNumbers).getDeal_flag());
+                    content.append(",");
+                    content.append(allSendData.get(i + hasSendDataNumbers).getAlarm_msg());
+                    content.append(",");
+                    content.append(allSendData.get(i + hasSendDataNumbers).getAlarm_type());
+                    content.append(",");
+                    content.append(allSendData.get(i + hasSendDataNumbers).getAlarm_flag());
+                    content.append(",");
+                    content.append(allSendData.get(i + hasSendDataNumbers).getAlarm_time());
+                    content.append(",");
+                    content.append(allSendData.get(i + hasSendDataNumbers).getDevice_id());
+                    content.append(",");
+                    content.append(allSendData.get(i + hasSendDataNumbers).getDevice_type());
+                    content.append(",");
+                    content.append(allSendData.get(i + hasSendDataNumbers).getLower_limit());
+                    content.append(",");
+                    content.append(allSendData.get(i + hasSendDataNumbers).getUpper_limit());
+                    content.append(",");
+                    content.append(allSendData.get(i + hasSendDataNumbers).getSubflow_id());
+                    content.append(",");
+                    content.append(allSendData.get(i + hasSendDataNumbers).getUnit_id());
+                    content.append(",");
+                    content.append(allSendData.get(i + hasSendDataNumbers).getRelease_flag());
+                    content.append(",");
+                    content.append(allSendData.get(i + hasSendDataNumbers).getOrigin_flag());
+                    content.append(",");
+                    content.append(allSendData.get(i + hasSendDataNumbers).getPlan_id());
+                    content.append(",");
+                    content.append(allSendData.get(i + hasSendDataNumbers).getIsSend());
+                    allSendData.get(i + hasSendDataNumbers).setIsSend(true);
+                    content.append(";");
+                    if (sendData.toString().equals(""))
+                        sendData = content;
+                    else
+                        sendData.append(content);
+                }
+                if (hasSendNumber == needSendNumber - 1)
+                    sendData.append("PlcDataAlarm,true");
+                else
+                    sendData.append("PlcDataAlarm,false");
+                String sendContent = " " + sendData.toString();
+                MessageProtocol objectMessage = new MessageProtocol(1, sendContent);
+                session.write(objectMessage);
+                hasSendNumber += 1;
+                if(hasSendDataNumbers == needSendNumber -1) {
+                    try {
+                        Thread.sleep(1000);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
 //            if(i != 0)
 //                System.out.println("Update success!");
 //            else
 //                System.out.println("ERROR");
 //            session.write("id: " + message.getId() + " address: " + message.getAddress() + " message: " + message.getMessage() + " date: "+ message.getDate());
+            }
+        }catch (Exception e){
+            e.printStackTrace();
         }
-        MessageProtocol objectMessage;
-        if(sendContent != null) {
-            sendContent += "PlcDataAlarm";
-            objectMessage = new MessageProtocol(1, sendContent);
-            session.write(objectMessage);
+        if(allSendData.size() != 0) {
             int i = plcDataAlarmDAO.batchUpdatePlcDataAlarmIsSend(allSendData);
-            if(i != 0)
-                System.out.println("Update success!");
+            if (i != 0)
+                System.out.println("Update Success!");
             else
                 System.out.println("ERROR");
         }
