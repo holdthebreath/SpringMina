@@ -19,9 +19,9 @@ import java.util.TimerTask;
 public class SendPlcDataAlarmData extends TimerTask{
     private Timestamp startTime = null;
     //间隔时间,单位毫秒(秒 * 分 * 时 * 天 * N)
-    private static int TIME_INTERVAL= 1000 * 60 * 60 * 24;
+    private final static int TIME_INTERVAL= 1000 * 60 * 60 * 24 * 3;
     private IoSession session;
-    private final static int DATA_PACKAGE = 5;
+    private final static int DATA_PACKAGE = 10;
 //    private MessageMapper messageMapper;
 //    public IoSession getSession() {
 //        return session;
@@ -188,7 +188,7 @@ public class SendPlcDataAlarmData extends TimerTask{
                 hasSendNumber += 1;
                 if(hasSendDataNumbers == needSendNumber -1) {
                     try {
-                        Thread.sleep(1000);
+                        Thread.sleep(200);
                     } catch (Exception e) {
                         e.printStackTrace();
                     }

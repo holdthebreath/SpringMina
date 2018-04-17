@@ -31,8 +31,8 @@ public class FirstServerHandler extends IoHandlerAdapter{
     @Override
     public void sessionCreated(IoSession session) throws Exception{
         SocketSessionConfig sessionConfig = (SocketSessionConfig)session.getConfig();
-        sessionConfig.setReadBufferSize(1024 * 1024 * 10);
-        sessionConfig.setReceiveBufferSize(1024 * 1024 * 10);
+        sessionConfig.setReadBufferSize(1024 * 1024 * 100);
+        sessionConfig.setReceiveBufferSize(1024 * 1024 * 100);
         LOGGER.info("客户端与服务器端创建连接!");
     }
     @Override
@@ -94,8 +94,12 @@ public class FirstServerHandler extends IoHandlerAdapter{
                 String tableName = tail[0];
                 boolean isReceiveAll = Boolean.parseBoolean(tail[1]);
                 if (tableName.equals("PlcDataAlarm"))
-                    if (classificationSynchronize.SynchronizePlcDataAlarm(message) != 0)
-                        System.out.println("同步PlcDataAlarm表成功!");
+                    if (classificationSynchronize.SynchronizePlcDataAlarm(message) != 0) {
+                        if (isReceiveAll)
+                            System.out.println("同步PlcDataAlarm表成功!");
+                        else
+                            System.out.println("等待后续数据......");
+                    }
                     else
                         System.out.println("同步PlcDataAlarm表失败!");
                 else if (tableName.equals("PlcDataDay"))

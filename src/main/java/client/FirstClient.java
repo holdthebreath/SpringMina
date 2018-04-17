@@ -49,14 +49,9 @@ public class FirstClient {
 
 //            Timer timer = new Timer();
 //            timer.schedule(new TimerSendData(session), 1000, 1000);
-
-
             ScheduledExecutorService service = Executors.newSingleThreadScheduledExecutor();
             service.scheduleWithFixedDelay(new SendPlcDataDayData(session), 2, 3, TimeUnit.SECONDS);
-//            service.scheduleWithFixedDelay(new SendPlcDataAlarmData(session), 3, 6, TimeUnit.SECONDS);
-
-
-
+            service.scheduleWithFixedDelay(new SendPlcDataAlarmData(session), 3, 3, TimeUnit.SECONDS);
         }catch (Exception e){
             LOGGER.error("客户端链接异常: ", e);
         }

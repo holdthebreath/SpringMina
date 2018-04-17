@@ -13,7 +13,7 @@ public class SendPlcDataDayData extends TimerTask{
     //查询数据的间隔时间,单位毫秒(秒 * 分 * 时 * 天 * N)
     private  final static int TIME_INTERVAL= 1000 * 60 * 60 * 24 * 10;
     //打包多少条数据一起发送
-    private final static int DATA_PACKAGE = 10;
+    private final static int DATA_PACKAGE = 100;
     private IoSession session;
     public SendPlcDataDayData(IoSession session){
         this.session = session;
@@ -107,13 +107,13 @@ public class SendPlcDataDayData extends TimerTask{
                     sendData.append("PlcDataDay,true");
                 else
                     sendData.append("PlcDataDay,false");
-                String sendContent = sendData.toString();
+                String sendContent = " " + sendData.toString();
                 MessageProtocol objectMessage = new MessageProtocol(1, sendContent);
                 session.write(objectMessage);
                 hasSendNumber += 1;
 //              发送一次,线程等待50毫秒
                 try {
-                    Thread.sleep(50);
+                    Thread.sleep(200);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
