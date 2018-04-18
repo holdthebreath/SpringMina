@@ -19,8 +19,8 @@ import java.util.concurrent.TimeUnit;
 
 public class FirstClient {
     private static Logger LOGGER = Logger.getLogger(FirstClient.class);
-    private static String HOST = "127.0.0.1";
-    private static int PORT = 9876;
+    private final static String HOST = "127.0.0.1";
+    private final static int PORT = 9876;
 
     public static void main(String[] args) {
         IoConnector ioConnector = new NioSocketConnector();
