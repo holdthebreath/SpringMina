@@ -1,8 +1,6 @@
 package server.handler;
 
-//import dao.MessageMapper;
 import dao.ReceiveMapper;
-        import entities.Message;
 import org.apache.mina.core.service.IoHandlerAdapter;
 
 import org.apache.log4j.Logger;
@@ -10,11 +8,9 @@ import org.apache.mina.core.session.IdleStatus;
 import org.apache.mina.core.session.IoSession;
 import org.apache.mina.transport.socket.SocketSessionConfig;
 import org.springframework.beans.factory.annotation.Autowired;
-        import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Component;
 import server.ClassificationSynchronize;
-
-        import java.sql.Timestamp;
-        import java.util.*;
+import java.sql.Timestamp;
 
 @Component
 public class FirstServerHandler extends IoHandlerAdapter{
